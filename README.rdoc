@@ -1,0 +1,37 @@
+= SaasySimple
+
+I was recently tasked with implementing a SaaS solution for a customer. After looking through
+various options we decided to go with SaaSy[http://saasy.com/]. Sadly there don't appear to be
+any modern gems which allow for easy implementation, so here's my endevor to write one.
+
+- How To Implement
+
+This is implemented as a Rails Engine and so is very easy to use. First add saasy_simple to
+your Gemfile.
+
+  gem 'saasy_simple', :git => ''
+
+Run bundle install and you should be ready to start configuring. Now create
+<tt>config/initializers/saasy_simple.rb</tt> and fill in the following.
+
+  # http://screencast.com/t/I35zr0rrmJ
+  module SaasySimple
+    class Engine < Rails::Engine
+      config.saasy_store_page_url = 'http://sites.fastspring.com/albumdraft/product/albumdraft'
+      config.saasy_username       = 'api_username'
+      config.saasy_password       = 'api_password'
+    end
+  end
+
+Your API credentials will be your login to fastspring. It is suggested that you create a
+separte user specific for API access though. You will find the Store Page URL under
+Home > Products and Pages > Product Name. An example can be found here:
+
+<img src="http://content.screencast.com/users/JonathanJeffus/folders/Jing/media/e2c6f49d-d9e6-401b-8eb8-b1654ee6367d/00000075.png" title="SaaSy Setup Example" />
+
+Next you need to mount the Rails Engine in your <tt>config/routes.rb</tt> file. Open this file
+and add:
+
+  mount SaasySimple::Engine => "/saasy"
+
+Copyright &copy; 2012 Assured Web Development, LLC.
