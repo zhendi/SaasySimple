@@ -1,4 +1,3 @@
 Rails.application.routes.draw do
-
-  mount SaasySimple::Engine => "/SaasySimple"
+  mount SaasySimple::Engine => "/saasysimple"
 end

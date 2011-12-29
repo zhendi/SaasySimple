@@ -2,20 +2,19 @@ require 'test_helper'
 
 module SaasySimple
   class SubscriptionsControllerTest < ActionController::TestCase
-    test "should get activate" do
-      get :activate
+    test "should post activate" do
+      post "subscriptions/activate"
       assert_response :success
     end
   
     test "should get billing" do
-      get :billing
+      get  "/saasysimple/subscriptions/billing"
       assert_response :success
     end
   
     test "should get deactivate" do
-      get :deactivate
+      post "/saasysimple/subscriptions/deactivate"
       assert_response :success
     end
-  
   end
 end
