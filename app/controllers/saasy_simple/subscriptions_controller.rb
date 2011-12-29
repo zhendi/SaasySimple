@@ -1,16 +1,7 @@
 require 'digest/md5'
+require 'open-uri'
 
 module SaasySimple
-  class Configuration
-    attr_accessor :store_page_url, :secret, :username, :password, :model
-    def initialize
-      @store_page_url = 'http://localhost:3001/store'
-      @secret         = 'some_secret'
-      @username       = 'jack'
-      @password       = 'jill'
-      @model          = User
-    end
-  end
   class SubscriptionsController < ApplicationController
     def activate
       logger.info "Activate: "+params.inspect
@@ -24,7 +15,20 @@ module SaasySimple
 
     def billing
       return unless current_user
-      redirect_to "#{SaasySimple.config.store_page_url}?referrer=#{current_user.id}"
+      if current_user.status == 'active'
+        xml = open(
+          "https://api.fastspring.com/company/" +
+          SaasySimple.config.store_id +
+          "/subscription/" + current_user.token +
+          "?user=" + SaasySimple.config.username +
+          "&pass=" + SaasySimple.config.password
+        )
+        logger.info "XML"+xml
+        doc = Nokogiri::XML(xml)
+        render SaasySimple.config.view
+      else
+        redirect_to "#{SaasySimple.config.url}?referrer=#{current_user.id}"
+      end
     end
 
     def deactivate
