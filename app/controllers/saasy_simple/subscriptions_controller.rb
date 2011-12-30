@@ -7,7 +7,7 @@ module SaasySimple
       logger.info "Activate: "+params.inspect
       if Digest::MD5.hexdigest(params["security_data"] + SaasySimple.config.secret) == params["security_hash"]
         logger.info "Success: Validated"
-        SaasySimple.config.model.activate( params['token'], params['referrer'] )
+        SaasySimple.config.model.activate( params['token'], params['id'] )
       else
         logger.info "activate: Failed: Validation"
       end
@@ -35,7 +35,7 @@ module SaasySimple
       logger.info "Deactivate: "+params.inspect
       if Digest::MD5.hexdigest(params["security_data"] + APP.config.secret) == params["security_hash"]
         logger.info "Success: Validated"
-        SaasySimple.config.model.deactivate( params['token'], params['referrer'] )
+        SaasySimple.config.model.deactivate( params['token'], params['id'] )
       else
         logger.info "activate: Failed: Validation"
       end
