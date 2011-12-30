@@ -4,7 +4,7 @@ I was recently tasked with implementing a SaaS solution for a customer. After lo
 various options we decided to go with SaaSy[http://saasy.com/]. Sadly there don't appear to be
 any modern gems which allow for easy implementation, so here's my endevor to write one.
 
-- How To Implement
+= How To Implement
 
 This is implemented as a Rails Engine and so is very easy to use. First add saasy_simple to
 your Gemfile.
@@ -14,13 +14,18 @@ your Gemfile.
 Run bundle install and you should be ready to start configuring. Now create
 <tt>config/initializers/saasy_simple.rb</tt> and fill in the following.
 
-  # http://screencast.com/t/I35zr0rrmJ
   module SaasySimple
-    class Engine < Rails::Engine
-      config.saasy_store_page_url = 'http://sites.fastspring.com/albumdraft/product/albumdraft'
-      config.saasy_secret         = 'my_api_secret_hash' # Details Below
-      config.saasy_username       = 'api_username'
-      config.saasy_password       = 'api_password'
+    class Configuration
+      attr_accessor :url, :store_id, :secret, :username, :password, :model, :view
+      def initialize
+        @store_id       = 'storename'
+        @url            = "http://sites.fastspring.com/#{@store_id}/product/productname"
+        @secret         = 'my_api_secret'
+        @username       = 'username'
+        @password       = 'password'
+        @model          = User
+        @view           = '/billing/index.haml'
+      end
     end
   end
 
@@ -34,5 +39,59 @@ Next you need to mount the Rails Engine in your <tt>config/routes.rb</tt> file. 
 and add:
 
   mount SaasySimple::Engine => "/saasy"
+
+Ok, the implementation is mostly. Complete. Your model used in the configuration needs to
+implement two methods; activate and deactivate. Also you need to be sure that the helper method
+current_user is defined in your application controller. This is default for Devise, if you
+use something else then you may need to alias your current user to this method.
+
+  def self.activate(token, id)
+    user = User.find( id )
+    user.token = token
+    user.status = 'active'
+    user.save!
+  end
+  def self.deactivate(token, id)
+    user = User.find( id )
+    user.token = token
+    user.status = 'deactivated'
+    user.save!
+  end
+
+These are just two examples. The value "token" is a unique identifier used by SaaSy to
+identify the subscription. You need to save it in current_user.token in order for the
+billing code to make the required request for subscription data from the API.
+
+= Setting Up Notifications
+
+In order for our system to work we need to set up notifications to go to our code when
+accounts are activated or deactivated. You can do this by clicking on the Notify menu item
+and then clicking "Add Notification Rule". You will need to do this twice, once for each
+notification type.
+
+http://content.screencast.com/users/JonathanJeffus/folders/Jing/media/4d514e5e-06dc-4185-866f-f1c868d8ba4d/00000076.png
+
+You will need to set the Format to "HTTP Remote Server Call" and the type to "Subscription
+Activation Notification" or "Subscription Deactivation Notification" depending on which of the
+two you are are currently doing. The field Remote Server URL is explained better on the
+next screen.
+
+http://content.screencast.com/users/JonathanJeffus/folders/Jing/media/a0e2015d-c2ee-40b9-82b0-78d471d36712/00000085.png
+
+Here you can see what each part of the Remote Server URL does. You need to modify or add the
+parameters to match the below screenshot for both activated and deactivated.
+
+http://content.screencast.com/users/JonathanJeffus/folders/Jing/media/6709359c-93d0-495a-9505-f7a65e47bb17/00000083.png
+
+= Putting It All Together
+
+You should have a mostly complete SaaS by now. Wherever you want to place a link to the billing
+page you enter.
+
+  <%= link_to "Change Subscription", '/saasy/subscriptions/billing' %>
+
+Presuming that the engine is mounted at '/saasy'. This will redirect a user that does not
+have a current subscription to the purchase page. If they have one it will fetch the
+billing data and pass it in @billing to the view you set in the config.
 
 Copyright &copy; 2012 Assured Web Development, LLC.
