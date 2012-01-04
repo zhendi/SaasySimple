@@ -22,7 +22,7 @@ module SaasySimple
           "/subscription/" + current_user.token +
           "?user=" + SaasySimple.config.username +
           "&pass=" + SaasySimple.config.password
-        )
+        ).read
         logger.info "XML"+xml
         doc = Nokogiri::XML(xml)
         render SaasySimple.config.view
