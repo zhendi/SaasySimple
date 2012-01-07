@@ -24,7 +24,6 @@ Run bundle install and you should be ready to start configuring. Now create
         @username       = 'username'
         @password       = 'password'
         @model          = User
-        @view           = '/billing/index.haml'
       end
     end
   end
@@ -91,7 +90,34 @@ page you enter.
   <%= link_to "Change Subscription", '/saasy/subscriptions/billing' %>
 
 Presuming that the engine is mounted at '/saasy'. This will redirect a user that does not
-have a current subscription to the purchase page. If they have one it will fetch the
-billing data and pass it in @billing to the view you set in the config.
+have a current subscription to the purchase page. If they have a subscription then
+it sends them to the "Subscription Details" page.
 
-Copyright &copy; 2012 Assured Web Development, LLC.
+Next open your user model and add:
+
+  before_destroy :unsubscribe
+  private
+  def unsubscribe
+    SaasySimple.cancel(self)
+  end
+
+This will unsubscribe them if they cancel their account at your site. Lastly
+you may want to display subscription information on their user profile. In order
+to do this add something like:
+
+  <%
+    subscription = SaasySimple.subscription(current_user)
+    billing_date = subscription['nextPeriodDate'].gsub(/Z/, '')
+  %>
+  <h3>Account Status</h3>
+  <% if current_user.status == 'active' %>
+    Status: <span class="label success"><%= subscription['status'] %></span></br />
+    Next Billing Date: <%= billing_date %>
+  <% else %>
+    Status: <span class="label important">inactive</span></br />
+  <% end %>
+
+Good luck implementing SaaSy. Please feel free to contact me with questions or
+make pull requests.
+
+Copyright (C) 2012 Assured Web Development, LLC.
