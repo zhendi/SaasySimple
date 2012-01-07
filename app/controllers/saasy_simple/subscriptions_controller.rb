@@ -16,15 +16,18 @@ module SaasySimple
     def billing
       return unless current_user
       if current_user.status == 'active'
-        xml = open(
+        x = open(
           "https://api.fastspring.com/company/" +
           SaasySimple.config.store_id +
           "/subscription/" + current_user.token +
           "?user=" + SaasySimple.config.username +
           "&pass=" + SaasySimple.config.password
-        ).read
-        logger.info "XML"+xml
-        doc = Nokogiri::XML(xml)
+        )
+        xml = x.read
+        nok = Nokogiri::XML(xml)
+        @nextPeriodDate = nok.xpath("//nextPeriodDate").text
+        @status = nok.xpath("//status").text
+        @customerUrl = nok.xpath("//customerUrl").text
         render SaasySimple.config.view
       else
         redirect_to "#{SaasySimple.config.url}?referrer=#{current_user.id}"
