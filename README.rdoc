@@ -39,10 +39,24 @@ and add:
 
   mount SaasySimple::Engine => "/saasy"
 
-Ok, the implementation is mostly. Complete. Your model used in the configuration needs to
-implement two methods; activate and deactivate. Also you need to be sure that the helper method
-current_user is defined in your application controller. This is default for Devise, if you
-use something else then you may need to alias your current user to this method.
+Ok, the implementation is mostly. Complete. The Engine makes two assumptions you will need to
+work with. One is that there will be a current_user defined that holds the user we're managing
+the subscription for. The other is that the user model has two fields: status and token. Status
+corresponds to the SaaSy status returned. The token is the ID for the subscription. You can add
+them with the following migration. Presuming your model/table is called "users".
+
+  class AddTokenToUsers < ActiveRecord::Migration
+    def change
+      add_column :users, :token, :string
+      add_column :users, :status, :string
+    end
+  end
+
+You need to be sure that the helper method current_user is defined in your application
+controller. This is default for Devise, if you use something else then you may need to
+alias your current user to this method.
+
+Your model used in the configuration needs to implement two methods; activate and deactivate.
 
   def self.activate(token, id)
     user = User.find( id )
