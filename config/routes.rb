@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  post "subscriptions/activate",   :controller => 'subscriptions', :action => 'activate'
-  get  "subscriptions/billing",    :controller => 'subscriptions', :action => 'billing'
-  post "subscriptions/deactivate", :controller => 'subscriptions', :action => 'deactivate'
+  post "saasy/subscriptions/activate",   :controller => 'subscriptions', :action => 'activate'
+  get  "saasy/subscriptions/billing",    :controller => 'subscriptions', :action => 'billing'
+  post "saasy/subscriptions/deactivate", :controller => 'subscriptions', :action => 'deactivate'
 end
