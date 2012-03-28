@@ -1,3 +1,6 @@
+= About this fork
+Forked and make it works with rails 3.0.6.
+
 = SaasySimple
 
 I was recently tasked with implementing a SaaS solution for a customer. After looking through
