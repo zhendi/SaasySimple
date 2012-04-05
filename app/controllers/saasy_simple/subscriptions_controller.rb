@@ -20,6 +20,7 @@ module SaasySimple
     end
 
     def deactivate
+      Rails.logger.warn params
       if Digest::MD5.hexdigest(params["security_data"] + SaasySimple.config.d_secret) == params["security_hash"]
         SaasySimple.config.model.deactivate( params['token'], params['id'] )
       end
