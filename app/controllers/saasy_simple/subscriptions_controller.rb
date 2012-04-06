@@ -19,8 +19,15 @@ module SaasySimple
       end
     end
 
+    def change
+      if Digest::MD5.hexdigest(params["security_data"] + SaasySimple.config.c_secret) == params["security_hash"]
+        unless params["SubscriptionEndDate"].blank?
+          SaasySimple.config.model.cancel( params['token'], params['id'] )
+        end
+      end
+    end
+    
     def deactivate
-      Rails.logger.warn params
       if Digest::MD5.hexdigest(params["security_data"] + SaasySimple.config.d_secret) == params["security_hash"]
         SaasySimple.config.model.deactivate( params['token'], params['id'] )
       end
