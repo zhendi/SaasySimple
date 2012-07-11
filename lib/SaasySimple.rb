@@ -1,6 +1,7 @@
 require "SaasySimple/engine"
 require 'net/https'
 require 'uri'
+require 'httparty'
 
 module SaasySimple
   def self.config(&block)
@@ -33,6 +34,22 @@ module SaasySimple
       s['customerUrl']    = nok.xpath("//customerUrl").text    if nok.xpath("//customerUrl")
     end
     s
+  end
+  
+  def update_subscription(subscription_update)
+    url = subscription_url(subscription_update.reference)
+    @auth = { :username => SaasySimple.config.username, :password => SaasySimple.config.password }
+    options = { :headers => { 'Content-Type' => 'application/xml' }, :body => subscription_update.to_xml, :basic_auth => @auth }
+    response = HTTParty.put(url, options)
+
+    if response.code == 200
+      sub = parse_subscription(response.parsed_response.fetch('subscription'))
+    else
+      exception = FsprgException.new(response.code, nil)
+      raise exception, "An error occurred calling the FastSpring subscription service", caller
+    end
+
+    sub
   end
 
   def self.cancel(user)

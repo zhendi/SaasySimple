@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    saasy_simple (0.1.1)
+    saasy_simple (0.1.5)
       rails (~> 3.0.6)
 
 GEM
@@ -38,6 +38,9 @@ GEM
     builder (2.1.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
+    httparty (0.8.3)
+      multi_json (~> 1.0)
+      multi_xml
     i18n (0.5.0)
     jquery-rails (1.0.12)
       railties (~> 3.0)
@@ -48,7 +51,9 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    mime-types (1.18)
+    mime-types (1.19)
+    multi_json (1.3.6)
+    multi_xml (0.5.1)
     nokogiri (1.5.0)
     polyglot (0.3.3)
     rack (1.2.5)
@@ -84,6 +89,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  httparty
   jquery-rails (= 1.0.12)
   nokogiri
   saasy_simple!
