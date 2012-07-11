@@ -14,9 +14,9 @@ module SaasySimple
       price = cal_price(current_user)
       if current_user.status == 'active'
         subscription = SaasySimple.subscription(current_user)
-        redirect_to subscription['customerUrl']+"&tags=total=#{price*100}"
+        redirect_to subscription['customerUrl']+"&tags=total=#{(price*100).to_i}"
       else
-        redirect_to SaasySimple.signup(current_user)+"&tags=total=#{price*100}"
+        redirect_to SaasySimple.signup(current_user)+"&tags=total=#{(price*100).to_i}"
       end
     end
 
