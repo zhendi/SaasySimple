@@ -1,7 +1,6 @@
 require "SaasySimple/engine"
 require 'net/https'
 require 'uri'
-require 'httparty'
 
 module SaasySimple
   def self.config(&block)
