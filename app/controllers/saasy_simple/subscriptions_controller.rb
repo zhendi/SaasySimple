@@ -53,6 +53,7 @@ module SaasySimple
           al << site
           gateway_count += 1
           registered_gateway = RegisteredGateway.where(:mac=>ug['mac']).first
+          next if registered_gateway.blank?
           latest_timestamp = registered_gateway.devices.where(:timestamp.exists=>true).order_by([[:timestamp, -1]]).limit(1).first.timestamp rescue nil
           latest_timestamp = Time.parse(latest_timestamp).advance(:minutes => -5).strftime("%Y%m%d%H%M%S") if latest_timestamp
           device_count += registered_gateway.devices.where(:timestamp.gte => latest_timestamp).count
