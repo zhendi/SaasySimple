@@ -16,7 +16,8 @@ module SaasySimple
         subscription = SaasySimple.subscription(current_user)
         redirect_to subscription['customerUrl']+"&tags=total=#{(price*100).to_i}"
       else
-        redirect_to SaasySimple.signup(current_user)+"&tags=total=#{(price*100).to_i}"
+        current_plan = BillingPlan.where(:user_id=>current_user.id).last
+        redirect_to SaasySimple.signup(current_plan)+"&tags=total=#{(price*100).to_i}"
       end
     end
 
@@ -37,6 +38,16 @@ module SaasySimple
     private
     
     def cal_price(user)
+      price = 0
+      billing_plan = BillingPlan.where(:user_id=>current_user.id).last
+      if billing_plan
+        device_count = (billing_plan['em_count'].to_i*5-billing_plan['device_count'] > 0) ? 0 : billing_plan['em_count'].to_i*5-billing_plan['device_count']
+        price = billing_plan['em_count'].to_i*120 + device_count*24
+      end
+      price
+    end
+    
+    def old_cal_price(user)
       if user["subscription"].blank? or user["subscription"]["price"].blank? 
         al = []
         site_price = 5
