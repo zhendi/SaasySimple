@@ -41,8 +41,11 @@ module SaasySimple
       price = 0
       billing_plan = BillingPlan.where(:user_id=>current_user.id).last
       if billing_plan
-        device_count = (billing_plan['em_count'].to_i*5-billing_plan['device_count'] > 0) ? 0 : billing_plan['em_count'].to_i*5-billing_plan['device_count']
-        price = billing_plan['em_count'].to_i*120 + device_count*24
+        if billing_plan['additional_price'].blank?
+          price = billing_plan['price'].to_f
+        else
+          price = billing_plan['additional_price'].to_f
+        end
       end
       price
     end
